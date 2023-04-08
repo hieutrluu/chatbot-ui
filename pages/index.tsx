@@ -1,3 +1,4 @@
+import useSWR from 'swr';
 import { Chat } from '@/components/Chat/Chat';
 import { Chatbar } from '@/components/Chatbar/Chatbar';
 import { Navbar } from '@/components/Mobile/Navbar';
@@ -38,7 +39,8 @@ import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { FrappeApp } from 'frappe-js-sdk';
-import { Prompt } from 'next/font/google';
+import { useFrappeGetDocList, SWRConfiguration } from 'frappe-react-sdk';
+// import { Prompt } from 'next/font/google';
 interface HomeProps {
   serverSideApiKeyIsSet: boolean;
   serverSidePluginKeysSet: boolean;
@@ -75,7 +77,24 @@ const Home: React.FC<HomeProps> = ({
 
   const [showSidebar, setShowSidebar] = useState<boolean>(true);
 
-  const [prompts, setPrompts] = useState<Prompt[]>([]);
+  // const [prompts, setPrompts] = useState<Prompt[]>([]);
+  // const { data: prompts, error: e2 } = useSWR('http://vector.localhost:8000/api/wtf', fetcher, { fallbackData: promptsProp } );
+
+  const { data: prompts, error, isValidating, mutate } = useFrappeGetDocList("Prompt" , 
+    {
+      fields: ['name', 'description', 'content', 'folder_id'],
+      // limit_start: pageIndex,
+      /** Number of documents to be fetched. Default is 20  */
+      // limit: 10,
+      /** Sort results by field and order  */
+      orderBy: {
+          field: "creation",
+          order: 'desc'
+      }
+    }, {}, { fallbackData: promptsProp }
+    );
+
+
   const [showPromptbar, setShowPromptbar] = useState<boolean>(true);
 
   // REFS ----------------------------------------------
@@ -704,12 +723,10 @@ const Home: React.FC<HomeProps> = ({
 
 
     // const prompts = localStorage.getItem('prompts');
-    
-    console.log("promptsProp");
-    console.log(promptsProp);
-    if (prompts) {
-      setPrompts(promptsProp);
-    }
+    // if (prompts) {
+    //   setPrompts(promptsProp);
+    // }
+
     const conversation_history = localStorage.getItem('conversation_history');
     if (conversation_history) {
       const parsedConversationHistory: Conversation[] =
@@ -740,6 +757,7 @@ const Home: React.FC<HomeProps> = ({
     }
   }, [serverSideApiKeyIsSet]);
 
+  // RENDER --------------------------------------------
   return (
     <>
       <Head>
