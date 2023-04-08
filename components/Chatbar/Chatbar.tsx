@@ -15,15 +15,15 @@ interface Props {
   loading: boolean;
   conversations: Conversation[];
   lightMode: 'light' | 'dark';
-  selectedConversation: Conversation;
+  selected_conversation: Conversation;
   apiKey: string;
   serverSideApiKeyIsSet: boolean;
-  pluginKeys: PluginKey[];
+  plugin_keys: PluginKey[];
   serverSidePluginKeysSet: boolean;
   folders: Folder[];
   onCreateFolder: (name: string) => void;
-  onDeleteFolder: (folderId: string) => void;
-  onUpdateFolder: (folderId: string, name: string) => void;
+  onDeleteFolder: (folder_id: string) => void;
+  onUpdateFolder: (folder_id: string, name: string) => void;
   onNewConversation: () => void;
   onToggleLightMode: (mode: 'light' | 'dark') => void;
   onSelectConversation: (conversation: Conversation) => void;
@@ -44,10 +44,10 @@ export const Chatbar: FC<Props> = ({
   loading,
   conversations,
   lightMode,
-  selectedConversation,
+  selected_conversation,
   apiKey,
   serverSideApiKeyIsSet,
-  pluginKeys,
+  plugin_keys,
   serverSidePluginKeysSet,
   folders,
   onCreateFolder,
@@ -86,7 +86,7 @@ export const Chatbar: FC<Props> = ({
   const handleDrop = (e: any) => {
     if (e.dataTransfer) {
       const conversation = JSON.parse(e.dataTransfer.getData('conversation'));
-      onUpdateConversation(conversation, { key: 'folderId', value: 0 });
+      onUpdateConversation(conversation, { key: 'folder_id', value: 0 });
 
       e.target.style.background = 'none';
     }
@@ -158,12 +158,12 @@ export const Chatbar: FC<Props> = ({
             <ChatFolders
               searchTerm={searchTerm}
               conversations={filteredConversations.filter(
-                (conversation) => conversation.folderId,
+                (conversation) => conversation.folder_id,
               )}
               folders={folders}
               onDeleteFolder={onDeleteFolder}
               onUpdateFolder={onUpdateFolder}
-              selectedConversation={selectedConversation}
+              selected_conversation={selected_conversation}
               loading={loading}
               onSelectConversation={onSelectConversation}
               onDeleteConversation={handleDeleteConversation}
@@ -183,9 +183,9 @@ export const Chatbar: FC<Props> = ({
             <Conversations
               loading={loading}
               conversations={filteredConversations.filter(
-                (conversation) => !conversation.folderId,
+                (conversation) => !conversation.folder_id,
               )}
-              selectedConversation={selectedConversation}
+              selected_conversation={selected_conversation}
               onSelectConversation={onSelectConversation}
               onDeleteConversation={handleDeleteConversation}
               onUpdateConversation={handleUpdateConversation}
@@ -203,7 +203,7 @@ export const Chatbar: FC<Props> = ({
         lightMode={lightMode}
         apiKey={apiKey}
         serverSideApiKeyIsSet={serverSideApiKeyIsSet}
-        pluginKeys={pluginKeys}
+        plugin_keys={plugin_keys}
         serverSidePluginKeysSet={serverSidePluginKeysSet}
         conversationsCount={conversations.length}
         onToggleLightMode={onToggleLightMode}

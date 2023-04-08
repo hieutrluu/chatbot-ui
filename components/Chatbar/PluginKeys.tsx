@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { SidebarButton } from '../Sidebar/SidebarButton';
 
 interface Props {
-  pluginKeys: PluginKey[];
+  plugin_keys: PluginKey[];
   onPluginKeyChange: (pluginKey: PluginKey) => void;
   onClearPluginKey: (pluginKey: PluginKey) => void;
 }
 
 export const PluginKeys: FC<Props> = ({
-  pluginKeys,
+  plugin_keys,
   onPluginKeyChange,
   onClearPluginKey,
 }) => {
@@ -88,25 +88,25 @@ export const PluginKeys: FC<Props> = ({
                     className="mt-2 w-full rounded-lg border border-neutral-500 px-4 py-2 text-neutral-900 shadow focus:outline-none dark:border-neutral-800 dark:border-opacity-50 dark:bg-[#40414F] dark:text-neutral-100"
                     type="password"
                     value={
-                      pluginKeys
+                      plugin_keys
                         .find((p) => p.pluginId === PluginID.GOOGLE_SEARCH)
-                        ?.requiredKeys.find((k) => k.key === 'GOOGLE_API_KEY')
+                        ?.required_keys.find((k) => k.key === 'GOOGLE_API_KEY')
                         ?.value
                     }
                     onChange={(e) => {
-                      const pluginKey = pluginKeys.find(
+                      const pluginKey = plugin_keys.find(
                         (p) => p.pluginId === PluginID.GOOGLE_SEARCH,
                       );
 
                       if (pluginKey) {
-                        const requiredKey = pluginKey.requiredKeys.find(
+                        const requiredKey = pluginKey.required_keys.find(
                           (k) => k.key === 'GOOGLE_API_KEY',
                         );
 
                         if (requiredKey) {
                           const updatedPluginKey = {
                             ...pluginKey,
-                            requiredKeys: pluginKey.requiredKeys.map((k) => {
+                            required_keys: pluginKey.required_keys.map((k) => {
                               if (k.key === 'GOOGLE_API_KEY') {
                                 return {
                                   ...k,
@@ -123,7 +123,7 @@ export const PluginKeys: FC<Props> = ({
                       } else {
                         const newPluginKey: PluginKey = {
                           pluginId: PluginID.GOOGLE_SEARCH,
-                          requiredKeys: [
+                          required_keys: [
                             {
                               key: 'GOOGLE_API_KEY',
                               value: e.target.value,
@@ -147,25 +147,25 @@ export const PluginKeys: FC<Props> = ({
                     className="mt-2 w-full rounded-lg border border-neutral-500 px-4 py-2 text-neutral-900 shadow focus:outline-none dark:border-neutral-800 dark:border-opacity-50 dark:bg-[#40414F] dark:text-neutral-100"
                     type="password"
                     value={
-                      pluginKeys
+                      plugin_keys
                         .find((p) => p.pluginId === PluginID.GOOGLE_SEARCH)
-                        ?.requiredKeys.find((k) => k.key === 'GOOGLE_CSE_ID')
+                        ?.required_keys.find((k) => k.key === 'GOOGLE_CSE_ID')
                         ?.value
                     }
                     onChange={(e) => {
-                      const pluginKey = pluginKeys.find(
+                      const pluginKey = plugin_keys.find(
                         (p) => p.pluginId === PluginID.GOOGLE_SEARCH,
                       );
 
                       if (pluginKey) {
-                        const requiredKey = pluginKey.requiredKeys.find(
+                        const requiredKey = pluginKey.required_keys.find(
                           (k) => k.key === 'GOOGLE_CSE_ID',
                         );
 
                         if (requiredKey) {
                           const updatedPluginKey = {
                             ...pluginKey,
-                            requiredKeys: pluginKey.requiredKeys.map((k) => {
+                            required_keys: pluginKey.required_keys.map((k) => {
                               if (k.key === 'GOOGLE_CSE_ID') {
                                 return {
                                   ...k,
@@ -182,7 +182,7 @@ export const PluginKeys: FC<Props> = ({
                       } else {
                         const newPluginKey: PluginKey = {
                           pluginId: PluginID.GOOGLE_SEARCH,
-                          requiredKeys: [
+                          required_keys: [
                             {
                               key: 'GOOGLE_API_KEY',
                               value: '',
@@ -202,7 +202,7 @@ export const PluginKeys: FC<Props> = ({
                   <button
                     className="mt-6 w-full rounded-lg border border-neutral-500 px-4 py-2 text-neutral-900 shadow hover:bg-neutral-100 focus:outline-none dark:border-neutral-800 dark:border-opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-300"
                     onClick={() => {
-                      const pluginKey = pluginKeys.find(
+                      const pluginKey = plugin_keys.find(
                         (p) => p.pluginId === PluginID.GOOGLE_SEARCH,
                       );
 

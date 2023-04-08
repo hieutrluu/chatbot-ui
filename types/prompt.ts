@@ -6,5 +6,5 @@ export interface Prompt {
   description: string;
   content: string;
   model: OpenAIModel;
-  folderId: string | null;
+  folder_id: string | null;
 }

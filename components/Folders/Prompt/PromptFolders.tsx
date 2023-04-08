@@ -30,7 +30,7 @@ export const PromptFolders: FC<Props> = ({
         <PromptFolder
           key={index}
           searchTerm={searchTerm}
-          prompts={prompts.filter((p) => p.folderId)}
+          prompts={prompts.filter((p) => p.folder_id)}
           currentFolder={folder}
           onDeleteFolder={onDeleteFolder}
           onUpdateFolder={onUpdateFolder}

@@ -58,7 +58,7 @@ export const PromptFolder: FC<Props> = ({
 
       const updatedPrompt = {
         ...prompt,
-        folderId: folder.id,
+        folder_id: folder.id,
       };
 
       onUpdatePrompt(updatedPrompt);
@@ -194,7 +194,7 @@ export const PromptFolder: FC<Props> = ({
 
       {isOpen
         ? prompts.map((prompt, index) => {
-            if (prompt.folderId === currentFolder.id) {
+            if (prompt.folder_id === currentFolder.id) {
               return (
                 <div key={index} className="ml-5 gap-2 border-l pl-2">
                   <PromptComponent

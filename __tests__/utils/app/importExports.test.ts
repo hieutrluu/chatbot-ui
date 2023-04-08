@@ -101,7 +101,7 @@ describe('cleanData Functions', () => {
             ],
             model: OpenAIModels[OpenAIModelID.GPT_3_5],
             prompt: DEFAULT_SYSTEM_PROMPT,
-            folderId: null,
+            folder_id: null,
           },
         ],
         folders: [],
@@ -156,7 +156,7 @@ describe('cleanData Functions', () => {
             ],
             model: OpenAIModels[OpenAIModelID.GPT_3_5],
             prompt: DEFAULT_SYSTEM_PROMPT,
-            folderId: null,
+            folder_id: null,
           },
         ],
         folders: [
@@ -191,7 +191,7 @@ describe('cleanData Functions', () => {
             ],
             model: OpenAIModels[OpenAIModelID.GPT_3_5],
             prompt: DEFAULT_SYSTEM_PROMPT,
-            folderId: null,
+            folder_id: null,
           },
         ],
         folders: [
@@ -208,7 +208,7 @@ describe('cleanData Functions', () => {
             description: '',
             content: '',
             model: OpenAIModels[OpenAIModelID.GPT_3_5],
-            folderId: null,
+            folder_id: null,
           },
         ],
       } as ExportFormatV4;
@@ -233,7 +233,7 @@ describe('cleanData Functions', () => {
             ],
             model: OpenAIModels[OpenAIModelID.GPT_3_5],
             prompt: DEFAULT_SYSTEM_PROMPT,
-            folderId: null,
+            folder_id: null,
           },
         ],
         folders: [
@@ -250,7 +250,7 @@ describe('cleanData Functions', () => {
             description: '',
             content: '',
             model: OpenAIModels[OpenAIModelID.GPT_3_5],
-            folderId: null,
+            folder_id: null,
           },
         ],
 

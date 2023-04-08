@@ -69,7 +69,7 @@ function currentDate() {
 }
 
 export const exportData = () => {
-  let history = localStorage.getItem('conversationHistory');
+  let history = localStorage.getItem('conversation_history');
   let folders = localStorage.getItem('folders');
   let prompts = localStorage.getItem('prompts');
 
@@ -113,9 +113,9 @@ export const importData = (
   const { history,folders, prompts } = cleanedData;
 
   const conversations = history;
-  localStorage.setItem('conversationHistory', JSON.stringify(conversations));
+  localStorage.setItem('conversation_history', JSON.stringify(conversations));
   localStorage.setItem(
-    'selectedConversation',
+    'selected_conversation',
     JSON.stringify(conversations[conversations.length - 1]),
   );
 

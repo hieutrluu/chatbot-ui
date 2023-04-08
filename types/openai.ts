@@ -1,8 +1,8 @@
 export interface OpenAIModel {
   id: string;
   name: string;
-  maxLength: number; // maximum length of a message
-  tokenLimit: number;
+  max_length: number; // maximum length of a message
+  token_limit: number;
 }
 
 export enum OpenAIModelID {
@@ -17,13 +17,13 @@ export const OpenAIModels: Record<OpenAIModelID, OpenAIModel> = {
   [OpenAIModelID.GPT_3_5]: {
     id: OpenAIModelID.GPT_3_5,
     name: 'GPT-3.5',
-    maxLength: 12000,
-    tokenLimit: 4000,
+    max_length: 12000,
+    token_limit: 4000,
   },
   [OpenAIModelID.GPT_4]: {
     id: OpenAIModelID.GPT_4,
     name: 'GPT-4',
-    maxLength: 24000,
-    tokenLimit: 8000,
+    max_length: 24000,
+    token_limit: 8000,
   },
 };

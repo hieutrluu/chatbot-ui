@@ -3,12 +3,12 @@ import { KeyValuePair } from './data';
 export interface Plugin {
   id: PluginID;
   name: PluginName;
-  requiredKeys: KeyValuePair[];
+  required_keys: KeyValuePair[];
 }
 
 export interface PluginKey {
   pluginId: PluginID;
-  requiredKeys: KeyValuePair[];
+  required_keys: KeyValuePair[];
 }
 
 export enum PluginID {
@@ -23,7 +23,7 @@ export const Plugins: Record<PluginID, Plugin> = {
   [PluginID.GOOGLE_SEARCH]: {
     id: PluginID.GOOGLE_SEARCH,
     name: PluginName.GOOGLE_SEARCH,
-    requiredKeys: [
+    required_keys: [
       {
         key: 'GOOGLE_API_KEY',
         value: '',

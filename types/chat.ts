@@ -20,5 +20,5 @@ export interface Conversation {
   messages: Message[];
   model: OpenAIModel;
   prompt: string;
-  folderId: string;
+  folder_id: string;
 }

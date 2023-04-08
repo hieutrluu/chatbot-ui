@@ -13,7 +13,7 @@ interface Props {
   lightMode: 'light' | 'dark';
   apiKey: string;
   serverSideApiKeyIsSet: boolean;
-  pluginKeys: PluginKey[];
+  plugin_keys: PluginKey[];
   serverSidePluginKeysSet: boolean;
   conversationsCount: number;
   onToggleLightMode: (mode: 'light' | 'dark') => void;
@@ -29,7 +29,7 @@ export const ChatbarSettings: FC<Props> = ({
   lightMode,
   apiKey,
   serverSideApiKeyIsSet,
-  pluginKeys,
+  plugin_keys,
   serverSidePluginKeysSet,
   conversationsCount,
   onToggleLightMode,
@@ -72,7 +72,7 @@ export const ChatbarSettings: FC<Props> = ({
 
       {!(serverSidePluginKeysSet) ? (
         <PluginKeys
-          pluginKeys={pluginKeys}
+          plugin_keys={plugin_keys}
           onPluginKeyChange={onPluginKeyChange}
           onClearPluginKey={onClearPluginKey}
         />

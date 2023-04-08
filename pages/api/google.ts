@@ -9,16 +9,16 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
   try {
-    const { messages, key, model, googleAPIKey, googleCSEId } =
+    const { messages, key, model, google_api_key, google_cse_id } =
       req.body as GoogleBody;
 
     const userMessage = messages[messages.length - 1];
 
     const googleRes = await fetch(
       `https://customsearch.googleapis.com/customsearch/v1?key=${
-        googleAPIKey ? googleAPIKey : process.env.GOOGLE_API_KEY
+        google_api_key ? google_api_key : process.env.GOOGLE_API_KEY
       }&cx=${
-        googleCSEId ? googleCSEId : process.env.GOOGLE_CSE_ID
+        google_cse_id ? google_cse_id : process.env.GOOGLE_CSE_ID
       }&q=${userMessage.content.trim()}&num=5`,
     );
 

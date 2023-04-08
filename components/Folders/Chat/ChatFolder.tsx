@@ -19,7 +19,7 @@ interface Props {
   onDeleteFolder: (folder: string) => void;
   onUpdateFolder: (folder: string, name: string) => void;
   // conversation props
-  selectedConversation: Conversation;
+  selected_conversation: Conversation;
   loading: boolean;
   onSelectConversation: (conversation: Conversation) => void;
   onDeleteConversation: (conversation: Conversation) => void;
@@ -36,7 +36,7 @@ export const ChatFolder: FC<Props> = ({
   onDeleteFolder,
   onUpdateFolder,
   // conversation props
-  selectedConversation,
+  selected_conversation,
   loading,
   onSelectConversation,
   onDeleteConversation,
@@ -65,7 +65,7 @@ export const ChatFolder: FC<Props> = ({
       setIsOpen(true);
 
       const conversation = JSON.parse(e.dataTransfer.getData('conversation'));
-      onUpdateConversation(conversation, { key: 'folderId', value: folder.id });
+      onUpdateConversation(conversation, { key: 'folder_id', value: folder.id });
 
       e.target.style.background = 'none';
     }
@@ -199,11 +199,11 @@ export const ChatFolder: FC<Props> = ({
 
       {isOpen
         ? conversations.map((conversation, index) => {
-          if (conversation.folderId === currentFolder.id) {
+          if (conversation.folder_id === currentFolder.id) {
             return (
               <div key={index} className="ml-5 gap-2 border-l pl-2">
                 <ConversationComponent
-                  selectedConversation={selectedConversation}
+                  selected_conversation={selected_conversation}
                   conversation={conversation}
                   loading={loading}
                   onSelectConversation={onSelectConversation}

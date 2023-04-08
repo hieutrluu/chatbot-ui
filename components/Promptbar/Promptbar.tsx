@@ -16,8 +16,8 @@ interface Props {
   prompts: Prompt[];
   folders: Folder[];
   onCreateFolder: (name: string) => void;
-  onDeleteFolder: (folderId: string) => void;
-  onUpdateFolder: (folderId: string, name: string) => void;
+  onDeleteFolder: (folder_id: string) => void;
+  onUpdateFolder: (folder_id: string, name: string) => void;
   onCreatePrompt: () => void;
   onUpdatePrompt: (prompt: Prompt) => void;
   onDeletePrompt: (prompt: Prompt) => void;
@@ -53,7 +53,7 @@ export const Promptbar: FC<Props> = ({
 
       const updatedPrompt = {
         ...prompt,
-        folderId: e.target.dataset.folderId,
+        folder_id: e.target.dataset.folder_id,
       };
 
       onUpdatePrompt(updatedPrompt);
@@ -149,7 +149,7 @@ export const Promptbar: FC<Props> = ({
             onDragLeave={removeHighlight}
           >
             <Prompts
-              prompts={filteredPrompts.filter((prompt) => !prompt.folderId)}
+              prompts={filteredPrompts.filter((prompt) => !prompt.folder_id)}
               onUpdatePrompt={handleUpdatePrompt}
               onDeletePrompt={handleDeletePrompt}
             />

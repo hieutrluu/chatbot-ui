@@ -64,13 +64,13 @@ export const ChatInput: FC<Props> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    const maxLength = model.maxLength;
+    const max_length = model.max_length;
 
-    if (value.length > maxLength) {
+    if (value.length > max_length) {
       alert(
         t(
-          `Message limit is {{maxLength}} characters. You have entered {{valueLength}} characters.`,
-          { maxLength, valueLength: value.length },
+          `Message limit is {{max_length}} characters. You have entered {{valueLength}} characters.`,
+          { max_length, valueLength: value.length },
         ),
       );
       return;

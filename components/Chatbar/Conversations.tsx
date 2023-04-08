@@ -6,7 +6,7 @@ import { ConversationComponent } from './Conversation';
 interface Props {
   loading: boolean;
   conversations: Conversation[];
-  selectedConversation: Conversation;
+  selected_conversation: Conversation;
   onSelectConversation: (conversation: Conversation) => void;
   onDeleteConversation: (conversation: Conversation) => void;
   onUpdateConversation: (
@@ -18,7 +18,7 @@ interface Props {
 export const Conversations: FC<Props> = ({
   loading,
   conversations,
-  selectedConversation,
+  selected_conversation,
   onSelectConversation,
   onDeleteConversation,
   onUpdateConversation,
@@ -31,7 +31,7 @@ export const Conversations: FC<Props> = ({
         .map((conversation, index) => (
           <ConversationComponent
             key={index}
-            selectedConversation={selectedConversation}
+            selected_conversation={selected_conversation}
             conversation={conversation}
             loading={loading}
             onSelectConversation={onSelectConversation}

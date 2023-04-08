@@ -11,7 +11,7 @@ interface Props {
   onDeleteFolder: (folder: string) => void;
   onUpdateFolder: (folder: string, name: string) => void;
   // conversation props
-  selectedConversation: Conversation;
+  selected_conversation: Conversation;
   loading: boolean;
   onSelectConversation: (conversation: Conversation) => void;
   onDeleteConversation: (conversation: Conversation) => void;
@@ -28,7 +28,7 @@ export const ChatFolders: FC<Props> = ({
   onDeleteFolder,
   onUpdateFolder,
   // conversation props
-  selectedConversation,
+  selected_conversation,
   loading,
   onSelectConversation,
   onDeleteConversation,
@@ -40,12 +40,12 @@ export const ChatFolders: FC<Props> = ({
         <ChatFolder
           key={index}
           searchTerm={searchTerm}
-          conversations={conversations.filter((c) => c.folderId)}
+          conversations={conversations.filter((c) => c.folder_id)}
           currentFolder={folder}
           onDeleteFolder={onDeleteFolder}
           onUpdateFolder={onUpdateFolder}
           // conversation props
-          selectedConversation={selectedConversation}
+          selected_conversation={selected_conversation}
           loading={loading}
           onSelectConversation={onSelectConversation}
           onDeleteConversation={onDeleteConversation}
