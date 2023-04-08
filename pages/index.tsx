@@ -39,7 +39,7 @@ import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { FrappeApp } from 'frappe-js-sdk';
-import { useFrappeGetDocList, SWRConfiguration } from 'frappe-react-sdk';
+import { useFrappeGetDocList, useFrappeCreateDoc, useFrappeDeleteDoc, useFrappeUpdateDoc } from 'frappe-react-sdk';
 // import { Prompt } from 'next/font/google';
 interface HomeProps {
   serverSideApiKeyIsSet: boolean;
@@ -77,8 +77,10 @@ const Home: React.FC<HomeProps> = ({
 
   const [showSidebar, setShowSidebar] = useState<boolean>(true);
 
+  const { createDoc } = useFrappeCreateDoc();
+  const { updateDoc } = useFrappeUpdateDoc();
+  const { deleteDoc } = useFrappeDeleteDoc();
   // const [prompts, setPrompts] = useState<Prompt[]>([]);
-  // const { data: prompts, error: e2 } = useSWR('http://vector.localhost:8000/api/wtf', fetcher, { fallbackData: promptsProp } );
 
   const { data: prompts, error, isValidating, mutate } = useFrappeGetDocList("Prompt" , 
     {
@@ -92,7 +94,7 @@ const Home: React.FC<HomeProps> = ({
           order: 'desc'
       }
     }, {}, { fallbackData: promptsProp }
-    );
+  ) as { data: Prompt[] };
 
 
   const [showPromptbar, setShowPromptbar] = useState<boolean>(true);
@@ -618,39 +620,57 @@ const Home: React.FC<HomeProps> = ({
 
   // PROMPT OPERATIONS --------------------------------------------
 
-  const handleCreatePrompt = () => {
+  const handleCreatePrompt = async () => {
     const newPrompt: Prompt = {
       id: uuidv4(),
       name: `Prompt ${prompts.length + 1}`,
-      description: '',
-      content: '',
-      model: OpenAIModels[defaultModelId],
+      description: 'a',
+      content: 'a',
+      model: OpenAIModels[defaultModelId]['id'],
+      // TODO: fix reference model using name, not id
       folderId: null,
     };
 
     const updatedPrompts = [...prompts, newPrompt];
 
-    setPrompts(updatedPrompts);
-    savePrompts(updatedPrompts);
+    // setPrompts(updatedPrompts);
+    // mutate(updatedPrompts, false);
+    await mutate(createDoc('Prompt', newPrompt), {
+      optimisticData: [...prompts, newPrompt],
+      rollbackOnError: true,
+      populateCache: false,
+      revalidate: false
+    });
+    // mutate(updatedPrompts);
+    // savePrompts(updatedPrompts);
   };
 
-  const handleUpdatePrompt = (prompt: Prompt) => {
+  const handleUpdatePrompt = async (prompt: Prompt) => {
     const updatedPrompts = prompts.map((p) => {
       if (p.id === prompt.id) {
         return prompt;
       }
-
       return p;
     });
-
-    setPrompts(updatedPrompts);
-    savePrompts(updatedPrompts);
+    
+    await updateDoc('Prompt', prompt.name, prompt);
+    mutate();
   };
 
-  const handleDeletePrompt = (prompt: Prompt) => {
-    const updatedPrompts = prompts.filter((p) => p.id !== prompt.id);
-    setPrompts(updatedPrompts);
-    savePrompts(updatedPrompts);
+  const handleDeletePrompt = async (prompt: Prompt) => {
+    console.log('delete prompt', prompt);
+    
+    const updatedPrompts = prompts.filter((p) => p.name !== prompt.name);
+    console.log(prompts, updatedPrompts);
+
+    await mutate(deleteDoc('Prompt', prompt.name), {
+      optimisticData: [updatedPrompts],
+      rollbackOnError: true,
+      populateCache: false,
+      revalidate: true
+    });
+    // setPrompts(updatedPrompts);
+    // savePrompts(updatedPrompts);
   };
 
   // EFFECTS  --------------------------------------------
