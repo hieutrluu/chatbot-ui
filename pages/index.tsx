@@ -37,17 +37,20 @@ import Head from 'next/head';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
-
+import { FrappeApp } from 'frappe-js-sdk';
+import { Prompt } from 'next/font/google';
 interface HomeProps {
   serverSideApiKeyIsSet: boolean;
   serverSidePluginKeysSet: boolean;
   defaultModelId: OpenAIModelID;
+  promptsProp: Prompt[];
 }
 
 const Home: React.FC<HomeProps> = ({
   serverSideApiKeyIsSet,
   serverSidePluginKeysSet,
   defaultModelId,
+  promptsProp
 }) => {
   const { t } = useTranslation('chat');
 
@@ -697,13 +700,18 @@ const Home: React.FC<HomeProps> = ({
       setFolders(JSON.parse(folders));
     }
 
-    const prompts = localStorage.getItem('prompts');
-    if (prompts) {
-      setPrompts(JSON.parse(prompts));
-    }
 
-    const conversationHistory = localStorage.getItem('conversationHistory');
-    if (conversationHistory) {
+
+
+    // const prompts = localStorage.getItem('prompts');
+    
+    console.log("promptsProp");
+    console.log(promptsProp);
+    if (prompts) {
+      setPrompts(promptsProp);
+    }
+    const conversation_history = localStorage.getItem('conversation_history');
+    if (conversation_history) {
       const parsedConversationHistory: Conversation[] =
         JSON.parse(conversationHistory);
       const cleanedConversationHistory = cleanConversationHistory(
@@ -878,11 +886,32 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
     serverSidePluginKeysSet = true;
   }
 
+  const FRAPPE_BASE_URL = 'http://vector.localhost:8000';
+  const API_KEY = '9b60b6f9d13b863';
+  const API_SECRET = 'd6a6a5999c7a794';
+
+  //Add your Frappe backend's URL
+  const frappe = new FrappeApp(FRAPPE_BASE_URL, {
+    useToken: true,
+    token: () => `${API_KEY}:${API_SECRET}`,
+    type: 'token', // use "bearer" in case of oauth token
+  });
+  const db = frappe.db();
+
+  let promptsProp2: Prompt[] = []
+  await db.getDocList('Prompt', {fields: ['name', 'description', 'content', 'folder_id']}).then(res=>{
+    promptsProp2 = res;
+    console.log('prompts');
+    console.log(promptsProp2);   
+  }).catch(err=>console.log(console.error(err)));
+
+
   return {
     props: {
       serverSideApiKeyIsSet: !!process.env.OPENAI_API_KEY,
       defaultModelId,
       serverSidePluginKeysSet,
+      promptsProp: promptsProp2,
       ...(await serverSideTranslations(locale ?? 'en', [
         'common',
         'chat',
