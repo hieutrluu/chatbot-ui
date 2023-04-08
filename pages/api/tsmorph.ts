@@ -6,9 +6,41 @@ import { Project, PropertySignature } from 'ts-morph';
 //   return !isOptional && !hasInitializer;
 // }
 import { FrappeApp } from 'frappe-js-sdk';
-const FRAPPE_BASE_URL = 'vector.localhost:8000';
+const FRAPPE_BASE_URL = 'http://vector.localhost:8000';
 const API_KEY = '9b60b6f9d13b863';
 const API_SECRET = 'd6a6a5999c7a794';
+
+async function createDocType(doctypeName: any, moduleName: any, fields:any) {
+  const response = await fetch(`${FRAPPE_BASE_URL}/api/resource/DocType`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `token ${API_KEY}:${API_SECRET}`,
+    },
+    body: JSON.stringify({
+      data: JSON.stringify({
+        doctype: "DocType",
+        // name: doctypeName,
+        module: moduleName,
+        fields: fields.map((field: any) => ({
+          fieldname: field.fieldname,
+          fieldtype: field.fieldtype,
+          label: field.label,
+          reqd: field.reqd || false,
+          options: field.options || "",
+        })),
+      }),
+    }),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    console.log(`Doctype ${doctypeName} created successfully in the ${moduleName} module.`);
+  } else {
+    console.error(`Error creating Doctype ${doctypeName} in the ${moduleName} module:`, await response.text());
+  }
+}
 
 //Add your Frappe backend's URL
 const frappe = new FrappeApp(FRAPPE_BASE_URL, {
@@ -43,7 +75,7 @@ function createDocFieldFromProperty(prop: PropertySignature): any {
   let docfield_type = getTypeScriptTypeToFieldtype(type);
   let docfield = {
     fieldname: prop.getName(),
-    label: prop.getName(),
+    label: prop.getName().toLowerCase(),
     fieldtype: docfield_type,
     reqd: prop.hasQuestionToken() ? 0 : 1,
     options: "",
@@ -116,10 +148,23 @@ let srcFiles = project.addSourceFilesAtPaths(
 );
 let interfaces = srcFiles[0].getInterfaces();
 interfaces.forEach((iface) => {
-  console.log(iface.getName());
-  let properties = iface.getProperties();
-
-  console.log(properties.map(prop => createDocFieldFromProperty(prop)))
+  if (iface.getName() === 'Conversation'){
+    console.log(iface.getName());
+    let properties = iface.getProperties();
+    let docfields = properties.map(prop => createDocFieldFromProperty(prop));
+    console.log(docfields)
+    // frappe.call().post('frappe_prompt.frappe_prompt.doctype.module.utils.my_function', {"data": {"test": "test"}}
+    frappe.call().post('frappe_prompt.api.utils.create_doctype', {"data": {"doctype_name": iface.getName(), "module": "Frappe Prompt", "fields": docfields}}
+    ).then((result) => console.log(result)).catch((error) => console.error(error));
+    // createDocType('Conversation', 'Frappe Prompt', properties.map(prop => createDocFieldFromProperty(prop)));
+    // db.createDoc('DocType',{
+    //     __newname: 'Conversation',
+    //     module: 'Frappe Prompt',
+    //     fields: properties.map(prop => createDocFieldFromProperty(prop))
+    // }).then((res) => {
+    //   console.log(res);
+    // }).catch(err => console.error(err)).finally(() => console.log('done'));
+  }
   // properties.forEach((property) => {
   //   console.log(property.getName());
   //   console.log(property.getType().getText());
