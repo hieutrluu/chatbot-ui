@@ -456,24 +456,33 @@ const Home: React.FC<HomeProps> = ({
 
   // FOLDER OPERATIONS  --------------------------------------------
 
-  const handleCreateFolder = (name: string, type: FolderType) => {
+  const handleCreateFolder = async (name: string, type: FolderType) => {
     const newFolder: Folder = {
       name: uuidv4(),
-      doc_name,
+      doc_name: name,
       type,
     };
 
     const updatedFolders = [...folders, newFolder];
 
-    // setFolders(updatedFolders);
-    saveFolders(updatedFolders);
+    await folder_mutate(createDoc('Folder', newFolder), {
+      optimisticData: updatedFolders,
+      rollbackOnError: true,
+      populateCache: false,
+      revalidate: false
+    });
   };
 
-  const handleDeleteFolder = (folderId: string) => {
+  const handleDeleteFolder = async (folderId: string) => {
     const updatedFolders = folders.filter((f) => f.name !== folderId);
-    // setFolders(updatedFolders);
-    saveFolders(updatedFolders);
-
+    folder_mutate(deleteDoc('Folder', folderId),{
+      optimisticData: updatedFolders,
+      rollbackOnError: true,
+      populateCache: false,
+      revalidate: false
+    });
+    
+    // TODO: Handle delete conversation in folders
     const updatedConversations: Conversation[] = conversations.map((c) => {
       if (c.folderId === folderId) {
         return {
@@ -497,11 +506,18 @@ const Home: React.FC<HomeProps> = ({
 
       return p;
     });
-    setPrompts(updatedPrompts);
-    savePrompts(updatedPrompts);
+
+    await mutate(deleteDoc('Prompt', prompt.name), {
+      optimisticData: updatedPrompts,
+      rollbackOnError: true,
+      populateCache: false,
+      revalidate: false
+    });   
+    // setPrompts(updatedPrompts);
+    // savePrompts(updatedPrompts);
   };
 
-  const handleUpdateFolder = (folderId: string, name: string) => {
+  const handleUpdateFolder = async (folderId: string, name: string) => {
     const updatedFolders = folders.map((f) => {
       if (f.name === folderId) {
         return {
@@ -513,8 +529,18 @@ const Home: React.FC<HomeProps> = ({
       return f;
     });
 
+    console.log('folderId', folderId);
+    await updateDoc('Folder', folderId, {doc_name: name});
+    folder_mutate();
+
+    // folder_mutate(updateDoc('Folder', prompt.name, prompt),{
+    //   optimisticData: updatedFolders,
+    //   rollbackOnError: true,
+    //   populateCache: false,
+    //   revalidate: false
+    // });
     // setFolders(updatedFolders);
-    saveFolders(updatedFolders);
+    // saveFolders(updatedFolders);
   };
 
   // CONVERSATION OPERATIONS  --------------------------------------------
@@ -651,16 +677,12 @@ const Home: React.FC<HomeProps> = ({
 
     const updatedPrompts = [...prompts, newPrompt];
 
-    // setPrompts(updatedPrompts);
-    // mutate(updatedPrompts, false);
     await mutate(createDoc('Prompt', newPrompt), {
       optimisticData: [...prompts, newPrompt],
       rollbackOnError: true,
       populateCache: false,
       revalidate: false
     });
-    // mutate(updatedPrompts);
-    // savePrompts(updatedPrompts);
   };
 
   const handleUpdatePrompt = async (prompt: Prompt) => {
@@ -671,8 +693,12 @@ const Home: React.FC<HomeProps> = ({
       return p;
     });
     
-    await updateDoc('Prompt', prompt.name, prompt);
-    mutate();
+    mutate(updateDoc('Prompt', prompt.name, prompt),{
+      optimisticData: updatedPrompts,
+      rollbackOnError: true,
+      populateCache: false,
+      revalidate: false
+    });
   };
 
   const handleDeletePrompt = async (prompt: Prompt) => {
@@ -687,8 +713,6 @@ const Home: React.FC<HomeProps> = ({
       populateCache: false,
       revalidate: false
     });
-    // setPrompts(updatedPrompts);
-    // savePrompts(updatedPrompts);
   };
 
   // EFFECTS  --------------------------------------------

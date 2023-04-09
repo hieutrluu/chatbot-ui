@@ -36,7 +36,6 @@ export const Promptbar: FC<Props> = ({
   const { t } = useTranslation('promptbar');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredPrompts, setFilteredPrompts] = useState<Prompt[]>(prompts);
-  console.log('folders', folders);
   const handleUpdatePrompt = (prompt: Prompt) => {
     onUpdatePrompt(prompt);
     setSearchTerm('');

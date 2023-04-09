@@ -45,7 +45,7 @@ export const PromptFolder: FC<Props> = ({
   };
 
   const handleRename = () => {
-    onUpdateFolder(currentFolder.id, renameValue);
+    onUpdateFolder(currentFolder.name, renameValue);
     setRenameValue('');
     setIsRenaming(false);
   };
@@ -58,7 +58,7 @@ export const PromptFolder: FC<Props> = ({
 
       const updatedPrompt = {
         ...prompt,
-        folderId: folder.id,
+        folderId: folder.name,
       };
 
       onUpdatePrompt(updatedPrompt);
@@ -130,7 +130,7 @@ export const PromptFolder: FC<Props> = ({
             )}
 
             <div className="relative max-h-5 flex-1 overflow-hidden text-ellipsis whitespace-nowrap break-all text-left text-[12.5px] leading-3">
-              {currentFolder.name}
+              {currentFolder.doc_name}
             </div>
           </button>
         )}
@@ -143,7 +143,7 @@ export const PromptFolder: FC<Props> = ({
                 e.stopPropagation();
 
                 if (isDeleting) {
-                  onDeleteFolder(currentFolder.id);
+                  onDeleteFolder(currentFolder.name);
                 } else if (isRenaming) {
                   handleRename();
                 }
@@ -174,7 +174,7 @@ export const PromptFolder: FC<Props> = ({
               onClick={(e) => {
                 e.stopPropagation();
                 setIsRenaming(true);
-                setRenameValue(currentFolder.name);
+                setRenameValue(currentFolder.doc_name);
               }}
             >
               <IconPencil size={18} />
@@ -194,7 +194,7 @@ export const PromptFolder: FC<Props> = ({
 
       {isOpen
         ? prompts.map((prompt, index) => {
-            if (prompt.folderId === currentFolder.id) {
+            if (prompt.folderId === currentFolder.name) {
               return (
                 <div key={index} className="ml-5 gap-2 border-l pl-2">
                   <PromptComponent
