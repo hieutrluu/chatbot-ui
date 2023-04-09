@@ -40,13 +40,14 @@ import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { FrappeApp } from 'frappe-js-sdk';
 import { useFrappeGetDocList, useFrappeCreateDoc, useFrappeDeleteDoc, useFrappeUpdateDoc } from 'frappe-react-sdk';
-// import { Prompt } from 'next/font/google';
+
 interface HomeProps {
   serverSideApiKeyIsSet: boolean;
   serverSidePluginKeysSet: boolean;
   defaultModelId: OpenAIModelID;
   promptsProp: Prompt[];
   foldersProp: Folder[];
+  conversationProp: Conversation[];
 }
 
 const Home: React.FC<HomeProps> = ({
@@ -54,7 +55,8 @@ const Home: React.FC<HomeProps> = ({
   serverSidePluginKeysSet,
   defaultModelId,
   promptsProp,
-  foldersProp
+  foldersProp,
+  conversationProp
 }) => {
   const { t } = useTranslation('chat');
 
@@ -111,9 +113,6 @@ const Home: React.FC<HomeProps> = ({
       }
     }, 'FolderKey', { fallbackData: foldersProp }
   ) as { data: Folder[] };
-  console.log('folder after swr', folders);
-  console.log('folderProp b4 swr', foldersProp);
-
 
   const [showPromptbar, setShowPromptbar] = useState<boolean>(true);
 
@@ -496,25 +495,23 @@ const Home: React.FC<HomeProps> = ({
     setConversations(updatedConversations);
     saveConversations(updatedConversations);
 
-    const updatedPrompts: Prompt[] = prompts.map((p) => {
-      if (p.folderId === folderId) {
-        return {
-          ...p,
-          folderId: null,
-        };
-      }
+    // const updatedPrompts: Prompt[] = prompts.map((p) => {
+    //   if (p.folderId === folderId) {
+    //     return {
+    //       ...p,
+    //       folderId: null,
+    //     };
+    //   }
 
-      return p;
-    });
+    //   return p;
+    // });
 
-    await mutate(deleteDoc('Prompt', prompt.name), {
-      optimisticData: updatedPrompts,
-      rollbackOnError: true,
-      populateCache: false,
-      revalidate: false
-    });   
-    // setPrompts(updatedPrompts);
-    // savePrompts(updatedPrompts);
+    // await mutate(deleteDoc('Prompt', prompt.name), {
+    //   optimisticData: updatedPrompts,
+    //   rollbackOnError: true,
+    //   populateCache: false,
+    //   revalidate: false
+    // }); 
   };
 
   const handleUpdateFolder = async (folderId: string, name: string) => {
@@ -529,9 +526,13 @@ const Home: React.FC<HomeProps> = ({
       return f;
     });
 
-    console.log('folderId', folderId);
-    await updateDoc('Folder', folderId, {doc_name: name});
-    folder_mutate();
+    
+    folder_mutate(updateDoc('Folder', folderId, {doc_name: name}),{
+      optimisticData: updatedFolders,
+      rollbackOnError: true,
+      populateCache: false,
+      revalidate: false 
+    });
 
     // folder_mutate(updateDoc('Folder', prompt.name, prompt),{
     //   optimisticData: updatedFolders,
@@ -702,11 +703,7 @@ const Home: React.FC<HomeProps> = ({
   };
 
   const handleDeletePrompt = async (prompt: Prompt) => {
-    console.log('delete prompt', prompt);
-    
     const updatedPrompts = prompts.filter((p) => p.name !== prompt.name);
-    console.log(prompts, updatedPrompts);
-
     await mutate(deleteDoc('Prompt', prompt.name), {
       optimisticData: updatedPrompts,
       rollbackOnError: true,
@@ -900,8 +897,7 @@ const Home: React.FC<HomeProps> = ({
               <div>
                 <Promptbar
                   prompts={prompts}
-                  // folders={folders.filter((folder) => folder.type === 'prompt')}
-                  folders={folders}
+                  folders={folders.filter((folder) => folder.type === 'prompt')}
                   onCreatePrompt={handleCreatePrompt}
                   onUpdatePrompt={handleUpdatePrompt}
                   onDeletePrompt={handleDeletePrompt}
@@ -966,9 +962,9 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   });
   const db = frappe.db();
 
-  let promptsProp2: Prompt[] = []
+  let promptsProp: Prompt[] = []
   await db.getDocList('Prompt', {fields: ['name', 'doc_name', 'description', 'content', 'folder_id']}).then(res=>{
-    promptsProp2 = res;
+    promptsProp = res;
   }).catch(err=>console.log(console.error(err)));
 
   let foldersProp: Folder[] = []
@@ -976,13 +972,19 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
     foldersProp = res;
   }).catch(err=>console.log(console.error(err)));
 
+  let conversationProp: Conversation[] = []
+  await db.getDocList('Folder', {fields: ['name', 'doc_name', 'type']}).then(res=>{
+    conversationProp = res;
+  }).catch(err=>console.log(console.error(err)));
+
   return {
     props: {
       serverSideApiKeyIsSet: !!process.env.OPENAI_API_KEY,
       defaultModelId,
       serverSidePluginKeysSet,
-      promptsProp: promptsProp2,
+      promptsProp,
       foldersProp,
+      conversationProp,
       ...(await serverSideTranslations(locale ?? 'en', [
         'common',
         'chat',
