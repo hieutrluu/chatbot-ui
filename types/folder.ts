@@ -1,6 +1,6 @@
 export interface Folder {
-  id: string;
   name: string;
+  doc_name: string;
   type: FolderType;
 }
 
