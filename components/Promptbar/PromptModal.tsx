@@ -10,7 +10,7 @@ interface Props {
 
 export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
   const { t } = useTranslation('promptbar');
-  const [name, setName] = useState(prompt.name);
+  const [doc_name, setName] = useState(prompt.doc_name);
   const [description, setDescription] = useState(prompt.description);
   const [content, setContent] = useState(prompt.content);
 
@@ -19,7 +19,7 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
 
   const handleEnter = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      onUpdatePrompt({ ...prompt, name, description, content: content.trim() });
+      onUpdatePrompt({ ...prompt, doc_name, description, content: content.trim() });
       onClose();
     }
   };
@@ -71,7 +71,7 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
               ref={nameInputRef}
               className="mt-2 w-full rounded-lg border border-neutral-500 px-4 py-2 text-neutral-900 shadow focus:outline-none dark:border-neutral-800 dark:border-opacity-50 dark:bg-[#40414F] dark:text-neutral-100"
               placeholder={t('A name for your prompt.') || ''}
-              value={name}
+              value={doc_name}
               onChange={(e) => setName(e.target.value)}
             />
 
@@ -109,7 +109,7 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
               onClick={() => {
                 const updatedPrompt = {
                   ...prompt,
-                  name,
+                  doc_name,
                   description,
                   content: content.trim(),
                 };

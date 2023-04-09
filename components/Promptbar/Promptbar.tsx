@@ -36,7 +36,7 @@ export const Promptbar: FC<Props> = ({
   const { t } = useTranslation('promptbar');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredPrompts, setFilteredPrompts] = useState<Prompt[]>(prompts);
-
+  console.log('folders', folders);
   const handleUpdatePrompt = (prompt: Prompt) => {
     onUpdatePrompt(prompt);
     setSearchTerm('');
@@ -79,7 +79,7 @@ export const Promptbar: FC<Props> = ({
       setFilteredPrompts(
         prompts.filter((prompt) => {
           const searchable =
-            prompt.name.toLowerCase() +
+            prompt.doc_name.toLowerCase() +
             ' ' +
             prompt.description.toLowerCase() +
             ' ' +

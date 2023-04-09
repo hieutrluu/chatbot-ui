@@ -46,13 +46,15 @@ interface HomeProps {
   serverSidePluginKeysSet: boolean;
   defaultModelId: OpenAIModelID;
   promptsProp: Prompt[];
+  foldersProp: Folder[];
 }
 
 const Home: React.FC<HomeProps> = ({
   serverSideApiKeyIsSet,
   serverSidePluginKeysSet,
   defaultModelId,
-  promptsProp
+  promptsProp,
+  foldersProp
 }) => {
   const { t } = useTranslation('chat');
 
@@ -68,7 +70,7 @@ const Home: React.FC<HomeProps> = ({
 
   const [models, setModels] = useState<OpenAIModel[]>([]);
 
-  const [folders, setFolders] = useState<Folder[]>([]);
+  // const [folders, setFolders] = useState<Folder[]>([]);
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] =
@@ -84,7 +86,7 @@ const Home: React.FC<HomeProps> = ({
 
   const { data: prompts, error, isValidating, mutate } = useFrappeGetDocList("Prompt" , 
     {
-      fields: ['name', 'description', 'content', 'folder_id'],
+      fields: ['name', 'doc_name', 'description', 'content', 'folder_id'],
       // limit_start: pageIndex,
       /** Number of documents to be fetched. Default is 20  */
       // limit: 10,
@@ -93,8 +95,24 @@ const Home: React.FC<HomeProps> = ({
           field: "creation",
           order: 'desc'
       }
-    }, {}, { fallbackData: promptsProp }
+    }, 'PromptKey', { fallbackData: promptsProp }
   ) as { data: Prompt[] };
+
+  const { data: folders, error: folder_err, isValidating: folder_validate, mutate: folder_mutate } = useFrappeGetDocList("Folder" , 
+    {
+      fields: ['name', 'doc_name', 'type'],
+      // limit_start: pageIndex,
+      /** Number of documents to be fetched. Default is 20  */
+      // limit: 10,
+      /** Sort results by field and order  */
+      orderBy: {
+          field: "creation",
+          order: 'desc'
+      }
+    }, 'FolderKey', { fallbackData: foldersProp }
+  ) as { data: Folder[] };
+  console.log('folder after swr', folders);
+  console.log('folderProp b4 swr', foldersProp);
 
 
   const [showPromptbar, setShowPromptbar] = useState<boolean>(true);
@@ -255,7 +273,7 @@ const Home: React.FC<HomeProps> = ({
 
         const updatedConversations: Conversation[] = conversations.map(
           (conversation) => {
-            if (conversation.id === selectedConversation.id) {
+            if (conversation.name === selectedConversation.name) {
               return updatedConversation;
             }
 
@@ -289,7 +307,7 @@ const Home: React.FC<HomeProps> = ({
 
         const updatedConversations: Conversation[] = conversations.map(
           (conversation) => {
-            if (conversation.id === selectedConversation.id) {
+            if (conversation.name === selectedConversation.name) {
               return updatedConversation;
             }
 
@@ -427,8 +445,8 @@ const Home: React.FC<HomeProps> = ({
 
     setConversations(history);
     setSelectedConversation(history[history.length - 1]);
-    setFolders(folders);
-    setPrompts(prompts);
+    // setFolders(folders);
+    // setPrompts(prompts);
   };
 
   const handleSelectConversation = (conversation: Conversation) => {
@@ -440,20 +458,20 @@ const Home: React.FC<HomeProps> = ({
 
   const handleCreateFolder = (name: string, type: FolderType) => {
     const newFolder: Folder = {
-      id: uuidv4(),
-      name,
+      name: uuidv4(),
+      doc_name,
       type,
     };
 
     const updatedFolders = [...folders, newFolder];
 
-    setFolders(updatedFolders);
+    // setFolders(updatedFolders);
     saveFolders(updatedFolders);
   };
 
   const handleDeleteFolder = (folderId: string) => {
-    const updatedFolders = folders.filter((f) => f.id !== folderId);
-    setFolders(updatedFolders);
+    const updatedFolders = folders.filter((f) => f.name !== folderId);
+    // setFolders(updatedFolders);
     saveFolders(updatedFolders);
 
     const updatedConversations: Conversation[] = conversations.map((c) => {
@@ -485,7 +503,7 @@ const Home: React.FC<HomeProps> = ({
 
   const handleUpdateFolder = (folderId: string, name: string) => {
     const updatedFolders = folders.map((f) => {
-      if (f.id === folderId) {
+      if (f.name === folderId) {
         return {
           ...f,
           name,
@@ -495,7 +513,7 @@ const Home: React.FC<HomeProps> = ({
       return f;
     });
 
-    setFolders(updatedFolders);
+    // setFolders(updatedFolders);
     saveFolders(updatedFolders);
   };
 
@@ -505,12 +523,12 @@ const Home: React.FC<HomeProps> = ({
     const lastConversation = conversations[conversations.length - 1];
 
     const newConversation: Conversation = {
-      id: uuidv4(),
-      name: `${t('New Conversation')}`,
+      name: uuidv4(),
+      doc_name: `${t('New Conversation')}`,
       messages: [],
       model: lastConversation?.model || {
-        id: OpenAIModels[defaultModelId].id,
         name: OpenAIModels[defaultModelId].name,
+        doc_name: OpenAIModels[defaultModelId].name,
         maxLength: OpenAIModels[defaultModelId].maxLength,
         tokenLimit: OpenAIModels[defaultModelId].tokenLimit,
       },
@@ -531,7 +549,7 @@ const Home: React.FC<HomeProps> = ({
 
   const handleDeleteConversation = (conversation: Conversation) => {
     const updatedConversations = conversations.filter(
-      (c) => c.id !== conversation.id,
+      (c) => c.name !== conversation.name,
     );
     setConversations(updatedConversations);
     saveConversations(updatedConversations);
@@ -543,8 +561,8 @@ const Home: React.FC<HomeProps> = ({
       saveConversation(updatedConversations[updatedConversations.length - 1]);
     } else {
       setSelectedConversation({
-        id: uuidv4(),
-        name: 'New conversation',
+        name: uuidv4(),
+        doc_name: 'New conversation',
         messages: [],
         model: OpenAIModels[defaultModelId],
         prompt: DEFAULT_SYSTEM_PROMPT,
@@ -577,8 +595,8 @@ const Home: React.FC<HomeProps> = ({
     localStorage.removeItem('conversationHistory');
 
     setSelectedConversation({
-      id: uuidv4(),
-      name: 'New conversation',
+      name: uuidv4(),
+      doc_name: 'New conversation',
       messages: [],
       model: OpenAIModels[defaultModelId],
       prompt: DEFAULT_SYSTEM_PROMPT,
@@ -622,12 +640,12 @@ const Home: React.FC<HomeProps> = ({
 
   const handleCreatePrompt = async () => {
     const newPrompt: Prompt = {
-      id: uuidv4(),
-      name: `Prompt ${prompts.length + 1}`,
+      name: uuidv4(),
+      doc_name: `Prompt ${prompts.length + 1}`,
       description: 'a',
       content: 'a',
       model: OpenAIModels[defaultModelId]['id'],
-      // TODO: fix reference model using name, not id
+      // TODO: fix reference model using name, not name
       folderId: null,
     };
 
@@ -647,7 +665,7 @@ const Home: React.FC<HomeProps> = ({
 
   const handleUpdatePrompt = async (prompt: Prompt) => {
     const updatedPrompts = prompts.map((p) => {
-      if (p.id === prompt.id) {
+      if (p.name === prompt.name) {
         return prompt;
       }
       return p;
@@ -664,10 +682,10 @@ const Home: React.FC<HomeProps> = ({
     console.log(prompts, updatedPrompts);
 
     await mutate(deleteDoc('Prompt', prompt.name), {
-      optimisticData: [updatedPrompts],
+      optimisticData: updatedPrompts,
       rollbackOnError: true,
       populateCache: false,
-      revalidate: true
+      revalidate: false
     });
     // setPrompts(updatedPrompts);
     // savePrompts(updatedPrompts);
@@ -734,19 +752,6 @@ const Home: React.FC<HomeProps> = ({
       setShowPromptbar(showPromptbar === 'true');
     }
 
-    const folders = localStorage.getItem('folders');
-    if (folders) {
-      setFolders(JSON.parse(folders));
-    }
-
-
-
-
-    // const prompts = localStorage.getItem('prompts');
-    // if (prompts) {
-    //   setPrompts(promptsProp);
-    // }
-
     const conversation_history = localStorage.getItem('conversation_history');
     if (conversation_history) {
       const parsedConversationHistory: Conversation[] =
@@ -767,8 +772,8 @@ const Home: React.FC<HomeProps> = ({
       setSelectedConversation(cleanedSelectedConversation);
     } else {
       setSelectedConversation({
-        id: uuidv4(),
-        name: 'New conversation',
+        name: uuidv4(),
+        doc_name: 'New conversation',
         messages: [],
         model: OpenAIModels[defaultModelId],
         prompt: DEFAULT_SYSTEM_PROMPT,
@@ -871,7 +876,8 @@ const Home: React.FC<HomeProps> = ({
               <div>
                 <Promptbar
                   prompts={prompts}
-                  folders={folders.filter((folder) => folder.type === 'prompt')}
+                  // folders={folders.filter((folder) => folder.type === 'prompt')}
+                  folders={folders}
                   onCreatePrompt={handleCreatePrompt}
                   onUpdatePrompt={handleUpdatePrompt}
                   onDeletePrompt={handleDeletePrompt}
@@ -937,12 +943,14 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   const db = frappe.db();
 
   let promptsProp2: Prompt[] = []
-  await db.getDocList('Prompt', {fields: ['name', 'description', 'content', 'folder_id']}).then(res=>{
+  await db.getDocList('Prompt', {fields: ['name', 'doc_name', 'description', 'content', 'folder_id']}).then(res=>{
     promptsProp2 = res;
-    console.log('prompts');
-    console.log(promptsProp2);   
   }).catch(err=>console.log(console.error(err)));
 
+  let foldersProp: Folder[] = []
+  await db.getDocList('Folder', {fields: ['name', 'doc_name', 'type']}).then(res=>{
+    foldersProp = res;
+  }).catch(err=>console.log(console.error(err)));
 
   return {
     props: {
@@ -950,6 +958,7 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
       defaultModelId,
       serverSidePluginKeysSet,
       promptsProp: promptsProp2,
+      foldersProp,
       ...(await serverSideTranslations(locale ?? 'en', [
         'common',
         'chat',
